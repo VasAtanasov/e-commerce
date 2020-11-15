@@ -2,6 +2,8 @@ package org.atanasov.gamestore.core.domain.order;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.atanasov.gamestore.core.domain.PersistableEnumId;
+import org.atanasov.gamestore.core.domain.PersistableEnumIdConverter;
 import org.atanasov.gamestore.core.domain.HasID;
 import org.atanasov.gamestore.core.domain.LifecycleEntity;
 import org.atanasov.gamestore.core.domain.customer.Customer;
@@ -10,7 +12,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -18,9 +19,9 @@ import java.util.stream.Stream;
 @Table(name = "orders")
 public class Order extends LifecycleEntity<Long> {
 
-  public enum OrderStatus implements HasID<Integer> {
-    SHOPPING_CART(1),
-    COMPLETED(2);
+  public enum OrderStatus implements PersistableEnumId {
+    SHOPPING_CART(101),
+    COMPLETED(102);
 
     private final Integer id;
 
@@ -34,21 +35,7 @@ public class Order extends LifecycleEntity<Long> {
     }
   }
 
-  public static class OrderStatusConverter implements AttributeConverter<OrderStatus, Integer> {
-
-    @Override
-    public Integer convertToDatabaseColumn(OrderStatus enumValue) {
-      return enumValue == null ? null : enumValue.getId();
-    }
-
-    @Override
-    public OrderStatus convertToEntityAttribute(Integer dbData) {
-      return Stream.of(OrderStatus.values())
-          .filter(t -> t.getId().equals(dbData))
-          .findAny()
-          .orElseThrow();
-    }
-  }
+  public static class OrderStatusConverter implements PersistableEnumIdConverter<OrderStatus> {}
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
