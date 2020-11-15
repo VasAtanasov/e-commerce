@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.atanasov.gamestore.core.domain.HasID;
 import org.atanasov.gamestore.core.domain.LifecycleEntity;
 import org.atanasov.gamestore.core.domain.customer.Customer;
-import org.atanasov.gamestore.core.domain.user.SystemUser;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,9 +22,9 @@ public class Order extends LifecycleEntity<Long> {
     SHOPPING_CART(1),
     COMPLETED(2);
 
-    private final int id;
+    private final Integer id;
 
-    OrderStatus(int id) {
+    OrderStatus(Integer id) {
       this.id = id;
     }
 
@@ -65,7 +64,7 @@ public class Order extends LifecycleEntity<Long> {
 
   @Column(name = "order_status_id")
   @Convert(converter = OrderStatusConverter.class)
-  private Integer orderStatusId = OrderStatus.SHOPPING_CART.getId();
+  private OrderStatus orderStatusId = OrderStatus.SHOPPING_CART;
 
   @ManyToOne(targetEntity = Customer.class, fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
@@ -89,13 +88,14 @@ public class Order extends LifecycleEntity<Long> {
 
   protected Order() {}
 
-  public static Order createEmptyShoppingCart() {
+  public static Order createEmptyShoppingCart(Customer customer) {
     Order order = new Order();
     order.assignAsShoppingCart();
+    order.customer = customer;
     return order;
   }
 
   public void assignAsShoppingCart() {
-    orderStatusId = OrderStatus.SHOPPING_CART.getId();
+    orderStatusId = OrderStatus.SHOPPING_CART;
   }
 }
