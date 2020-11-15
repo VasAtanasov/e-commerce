@@ -1,7 +1,11 @@
-package org.atanasov.gamestore.core.domain;
+package org.atanasov.gamestore.core.domain.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.atanasov.gamestore.core.domain.Authority;
+import org.atanasov.gamestore.core.domain.LifecycleEntity;
+import org.atanasov.gamestore.core.domain.customer.Customer;
+import org.atanasov.gamestore.core.utils.UIDGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -30,6 +34,9 @@ public class SystemUser extends LifecycleEntity<Long> {
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private Long id;
 
+  @Column(unique = true, nullable = false, updatable = false, columnDefinition = "BINARY(16)")
+  private UUID uid;
+
   @Email
   @Column(name = "email", nullable = false, unique = true)
   private String email;
@@ -37,11 +44,14 @@ public class SystemUser extends LifecycleEntity<Long> {
   @Column(name = "password", nullable = false)
   private String password;
 
-  @Column(name = "full_name")
-  private String fullName;
+  @Column(name = "first_name")
+  private String lastName;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-  private ShoppingCart shoppingCart;
+  @Column(name = "last_name")
+  private String firstName;
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private Customer customer;
 
   @ElementCollection(fetch = FetchType.LAZY, targetClass = Role.class)
   @JoinTable(
@@ -55,12 +65,25 @@ public class SystemUser extends LifecycleEntity<Long> {
   @Enumerated(value = EnumType.STRING)
   private Set<Role> roles = new HashSet<>();
 
-  @OneToMany(
-      mappedBy = "user",
-      fetch = FetchType.LAZY,
-      cascade = CascadeType.ALL,
-      orphanRemoval = true)
-  private List<Order> orders = new ArrayList<>();
+  protected SystemUser() {}
+
+  public static SystemUser makeAdminEmpty() {
+    SystemUser user = new SystemUser();
+    user.uid = UIDGenerator.generateId();
+    user.assignAsAdmin();
+    return user;
+  }
+
+  public static SystemUser makeEmpty() {
+    SystemUser user = new SystemUser();
+    user.uid = UIDGenerator.generateId();
+    user.assignAsNormalUser();
+    return user;
+  }
+
+  public String getFullName() {
+    return String.format("%s %s", getFirstName(), getLastName());
+  }
 
   public boolean isAdmin() {
     if (roles == null || roles.isEmpty()) {

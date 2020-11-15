@@ -1,7 +1,8 @@
-package org.atanasov.gamestore.core.domain;
+package org.atanasov.gamestore.core.domain.products;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.atanasov.gamestore.core.domain.LifecycleEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -35,4 +36,6 @@ public class Product extends LifecycleEntity<Long> {
   @Column(name = "image_rul")
   private String imageUrl;
 
+  @Column(name = "total_inventory")
+  private int totalInventory;
 }

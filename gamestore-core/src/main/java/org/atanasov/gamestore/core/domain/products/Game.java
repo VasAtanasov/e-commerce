@@ -1,4 +1,4 @@
-package org.atanasov.gamestore.core.domain;
+package org.atanasov.gamestore.core.domain.products;
 
 import lombok.Getter;
 import lombok.Setter;

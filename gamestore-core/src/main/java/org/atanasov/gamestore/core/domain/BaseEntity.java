@@ -18,10 +18,10 @@ import java.io.Serializable;
 public abstract class BaseEntity<PK extends Serializable> implements HasID<PK>, Persistable<PK> {
 
   @Version
-  @Column(nullable = false, name = "rev")
+  @Column(nullable = false, name = "version")
   @Getter
   @Setter
-  protected Integer rev;
+  protected Integer version;
 
   /**
    * AccessType.PROPERTY allows safe getId() call on associated entities without unnecessary entity
