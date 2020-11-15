@@ -38,4 +38,5 @@ public class Collection extends LifecycleEntity<Long> {
       joinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id"),
       inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
   private List<Product> products = new ArrayList<>();
+
 }

@@ -1,36 +1,28 @@
 package org.atanasov.gamestore.core.repositories;
 
-import org.atanasov.gamestore.TestContextConfiguration;
+import org.atanasov.gamestore.BaseDataJpaTest;
 import org.atanasov.gamestore.core.domain.user.SystemUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@ContextConfiguration(classes = TestContextConfiguration.class)
-@Transactional(readOnly = true)
-class SystemUserRepositoryTest {
+@Rollback(value = false)
+class SystemUserRepositoryTest extends BaseDataJpaTest {
   @Autowired SystemUserRepository systemUserRepository;
 
   @Test
   @Transactional
-  void should_saveUser() {
-
+  void should_saveUser_when_validData() {
     long beforeSave = systemUserRepository.count();
-
     SystemUser user = SystemUser.makeAdminEmpty();
     user.setEmail("user@email.com");
     user.setFirstName("User");
     user.setLastName("User");
     user.setPassword("passwd");
-
     systemUserRepository.save(user);
-    systemUserRepository.flush();
-
     long afterSave = systemUserRepository.count();
     assertThat(beforeSave + 1).isEqualTo(afterSave);
   }

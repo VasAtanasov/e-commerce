@@ -2,10 +2,11 @@ package org.atanasov.gamestore.core.domain.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.atanasov.gamestore.core.domain.Authority;
 import org.atanasov.gamestore.core.domain.LifecycleEntity;
 import org.atanasov.gamestore.core.domain.customer.Customer;
 import org.atanasov.gamestore.core.utils.UIDGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 @Setter
 @Entity
 @Table(name = "system_user")
-public class SystemUser extends LifecycleEntity<Long> {
+public class SystemUser extends LifecycleEntity<Long> implements UserDetails {
 
-  public enum Role implements Authority {
+  public enum Role implements GrantedAuthority {
     ADMIN,
     USER;
 
@@ -64,6 +65,36 @@ public class SystemUser extends LifecycleEntity<Long> {
   @Column(name = "role")
   @Enumerated(value = EnumType.STRING)
   private Set<Role> roles = new HashSet<>();
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return new HashSet<GrantedAuthority>(roles);
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
   protected SystemUser() {}
 
